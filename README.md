@@ -11,7 +11,7 @@ The application is available at (866)-399-2690.
 ### Core Functionality
 AutoScheduler Assitant is capable of handling incoming phone calls, understanding the user's speech input, and swiftly provides appropriate appointments based on the user's input. 
 
-The application does not store any personal user data that is collected. Furthermore, the data is not shared with any third parties.
+The application does not store any personal user data that is collected.
 
 ### Key Features
 
