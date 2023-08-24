@@ -3,7 +3,7 @@
 Call (866)-399-2690 to try it out!
 
 
-AutoScheduler Assitant is an intelligent phone assistant that makes scheduling medical appointments seamlessly. 
+AutoScheduler Assitant is an intelligent phone assistant that makes scheduling medical appointments seamless. 
 
 Flask, Twilio's Voice API, and the OpenAI GPT-4 model are powering the application. AutoScheduler Assitant can understand user speech input and respond with the end goal of helping the user schedule their medical appointment by providing appropriate responses.
 
