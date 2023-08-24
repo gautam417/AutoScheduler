@@ -1,85 +1,82 @@
 from flask import Flask, request
 from twilio.twiml.voice_response import Gather, VoiceResponse
+import openai
 
 app = Flask(__name__)
+openai.api_key = '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'
+
+def generate_question(prompt):
+    openai_response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=50
+    )
+    return openai_response.choices[0].text
 
 @app.route('/call', methods=['POST'])
 def handle_call():
     response = VoiceResponse()
     gather = Gather(numDigits=1, action='/menu_options')
-    gather.say('Welcome to the Auto Scheduler Medical AI Assistant. Press 1 to schedule an appointment or 2 to repeat this intro message.')
+    gather.say("Welcome to your AutoScheduler Medical AI Assistant. Press 1 to start scheduling an appointment, or press 2 to hear this message again.")
     response.append(gather)
     return str(response)
 
 @app.route('/menu_options', methods=['POST'])
 def menu_options():
     selected_option = request.values.get('Digits', '')
+    next_question = "Please provide your full name, date of birth, and address." if selected_option == '1' else "Press 1 to start scheduling an appointment, or press 2 to hear this message again."
     response = VoiceResponse()
-
-    if selected_option == '1':
-        gather = Gather(input='speech', action='/collect_personal_info')
-        gather.say('Please provide your name, date of birth, and place of residence.')
-        response.append(gather)
-    else:
-        response.redirect('/call')
-
+    action_url = '/collect_personal_info' if selected_option == '1' else '/call'
+    gather = Gather(input='speech', action=action_url)
+    gather.say(next_question)
+    response.append(gather)
     return str(response)
 
 @app.route('/collect_personal_info', methods=['POST'])
 def collect_personal_info():
-    # Process personal information
     response = VoiceResponse()
     gather = Gather(input='speech', action='/collect_insurance')
-    gather.say('Please provide your insurance payer name and ID.')
+    gather.say("Please tell me your insurance provider and ID number.")
     response.append(gather)
     return str(response)
 
 @app.route('/collect_insurance', methods=['POST'])
 def collect_insurance():
-    # Process insurance information
     response = VoiceResponse()
     gather = Gather(input='speech', action='/collect_referral')
-    gather.say('Do you have a referral? If yes, please provide the referral details.')
+    gather.say("Do you have a referral from another doctor? If so, please provide the details.")
     response.append(gather)
     return str(response)
 
 @app.route('/collect_referral', methods=['POST'])
 def collect_referral():
-    # Process referral information
     response = VoiceResponse()
     gather = Gather(input='speech', action='/collect_complaint')
-    gather.say('Please provide the chief medical complaint or reason for your visit.')
+    gather.say("What is the chief medical complaint or reason for the visit?")
     response.append(gather)
     return str(response)
 
 @app.route('/collect_complaint', methods=['POST'])
 def collect_complaint():
-    # Process complaint information
     response = VoiceResponse()
     gather = Gather(input='speech', action='/collect_contact_info')
-    gather.say('Please provide your contact information.')
+    gather.say("Please provide your contact information such as phone number and email address.")
     response.append(gather)
     return str(response)
 
 @app.route('/collect_contact_info', methods=['POST'])
 def collect_contact_info():
-    # Process contact information
     response = VoiceResponse()
     gather = Gather(input='speech', action='/final_schedule')
-    gather.say('Dr. Smith is available at 10 AM on Monday, and Dr. Johnson at 2 PM on Tuesday. Press 1 for Dr. Smith or 2 for Dr. Johnson.')
+    gather.say("Please select one of our top medical providers in your area. Provider A at 10 AM, Provider B at 2 PM, or Provider C at 4 PM.")
     response.append(gather)
     return str(response)
 
 @app.route('/final_schedule', methods=['POST'])
 def final_schedule():
-    selected_option = request.values.get('Digits', '')
+    response_text = request.values.get('SpeechResult')
     response = VoiceResponse()
-
-    if selected_option == '1':
-        response.say('Your appointment with Dr. Smith has been scheduled for 10 AM on Monday. Thank you!')
-    else:
-        response.say('Your appointment with Dr. Johnson has been scheduled for 2 PM on Tuesday. Thank you!')
-
+    response.say(f"You've successfully scheduled an appointment with {response_text}. Thank you for using our service!")
     return str(response)
 
 if __name__ == '__main__':
