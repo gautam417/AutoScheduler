@@ -3,7 +3,8 @@ from twilio.twiml.voice_response import Gather, VoiceResponse
 import openai
 
 app = Flask(__name__)
-openai.api_key = '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'
+openai.api_key = os.environ.get('OPENAI_SECRET_KEY')
+
 
 def generate_question(prompt):
     openai_response = openai.Completion.create(
